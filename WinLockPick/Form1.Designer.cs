@@ -39,12 +39,14 @@
             this.backgroundPictureBox.Location = new System.Drawing.Point(-1, -1);
             this.backgroundPictureBox.Name = "backgroundPictureBox";
             this.backgroundPictureBox.Size = new System.Drawing.Size(801, 452);
+            this.backgroundPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.backgroundPictureBox.TabIndex = 0;
             this.backgroundPictureBox.TabStop = false;
+            this.backgroundPictureBox.Click += new System.EventHandler(this.backgroundPictureBox_Click);
             // 
             // accountImagePictureBox
             // 
-            this.accountImagePictureBox.Location = new System.Drawing.Point(228, 88);
+            this.accountImagePictureBox.Location = new System.Drawing.Point(271, 114);
             this.accountImagePictureBox.Name = "accountImagePictureBox";
             this.accountImagePictureBox.Size = new System.Drawing.Size(291, 251);
             this.accountImagePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -58,7 +60,9 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.accountImagePictureBox);
             this.Controls.Add(this.backgroundPictureBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.backgroundPictureBox)).EndInit();

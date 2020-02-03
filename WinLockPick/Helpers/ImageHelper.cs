@@ -13,12 +13,17 @@ namespace WinLockPick.Helpers
     {
         public static Bitmap GetLockscreenWallpaper()
         {
-            string spotlightPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\localstate\assets");
-            string defaultWinPath = @"C:\Windows\Web\Wallpaper\Windows\img0.jpg";
+            string spotlightPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\localstate\assets"); // <- Unreliable
+            var defaultWinPath = new DirectoryInfo(@"C:\Windows\Web\Screen");
 
-            if (Directory.Exists(spotlightPath) && Directory.GetFiles(spotlightPath).Any())
-                return new Bitmap(new DirectoryInfo(spotlightPath).GetFiles().OrderByDescending(f => f.CreationTime).ToArray()[0].FullName);  
-            else return new Bitmap(defaultWinPath);
+            if(!Directory.Exists(defaultWinPath.FullName)) return new Bitmap(@"C:\Windows\Web\Wallpaper\Windows\img0.jpg");
+
+            //if (Directory.Exists(spotlightPath) && Directory.GetFiles(spotlightPath).Any())
+            //    return new Bitmap(new DirectoryInfo(spotlightPath).GetFiles().OrderByDescending(f => f.CreationTime).ToArray()[0].FullName);
+            //else return new Bitmap(defaultWinPath);
+
+            var rndImg = new Random().Next(0, defaultWinPath.GetFiles().ToArray().Length - 1);
+            return new Bitmap(defaultWinPath.GetFiles()[rndImg].FullName);
         }
         public static Bitmap GetAccountImage()
         {
@@ -29,59 +34,7 @@ namespace WinLockPick.Helpers
             AccountPictureReg.Close();
             var accPicture = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft\\Windows\\AccountPictures\\" + AccountPictureFilename + ".accountpicture-ms");
 
-            return new Bitmap(accPicture);
+            return AccountImageHelper.GetImage(accPicture);
         }
-        private static Bitmap GetImage448(string path)
-        {
-            FileStream fs = new FileStream(path, FileMode.Open);
-            long position = Seek(fs, "JFIF", 100);
-            byte[] b = new byte[Convert.ToInt32(fs.Length)];
-            fs.Seek(position - 6, SeekOrigin.Begin);
-            fs.Read(b, 0, b.Length);
-            fs.Close();
-            fs.Dispose();
-            return GetBitmapImage(b);
-        }
-        private static long Seek(FileStream fs, string searchString, int startIndex)
-        {
-            char[] search = searchString.ToCharArray();
-            long result = -1, position = 0, stored = startIndex,
-            begin = fs.Position;
-            int c;
-            while ((c = fs.ReadByte()) != -1)
-            {
-                if ((char)c == search[position])
-                {
-                    if (stored == -1 && position > 0 && (char)c == search[0])
-                    {
-                        stored = fs.Position;
-                    }
-                    if (position + 1 == search.Length)
-                    {
-                        result = fs.Position - search.Length;
-                        fs.Position = result;
-                        break;
-                    }
-                    position++;
-                }
-                else if (stored > -1)
-                {
-                    fs.Position = stored + 1;
-                    position = 1;
-                    stored = -1;
-                }
-                else
-                {
-                    position = 0;
-                }
-            }
-
-            if (result == -1)
-            {
-                fs.Position = begin;
-            }
-            return result;
-        }
-
-}
+    }
 }
